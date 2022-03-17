@@ -32,8 +32,9 @@ class Converter:
         return output
 
     def __getCloud(self, CloudInfos):
-        cloudText = 'Clouds '
+        cloudText = ''
         if CloudInfos:
+            cloudText = 'Clouds '
             for cloud in CloudInfos:
                 cloudText += cloud['meaning'] + " " + str(cloud['altitude']) + "ft" + " "
             cloudText += ", "
@@ -76,14 +77,22 @@ class Converter:
     def __getMetarVoiceText(self):
         return str.format("Weather report at {0}, {1}{2}{3}{4}{5}", self.__getTime(self.decodedMetar.date_time), self.__getWind(self.decodedMetar.wind), self.__getVisibility(self.decodedMetar.visibility), self.__getCloud(self.decodedMetar.cloud), self.__getTemperature(self.decodedMetar.temperatures), self.__getQNH(self.decodedMetar.qnh))
 
-    def GetMetar(self, ICAO_Code):
+    def __saveMetarToAudio(self, OutputFolder):
+        if OutputFolder != '':
+            filename = str.format("{0}\\{1}.mp3", OutputFolder, self.lastICAO)
+        else:
+            filename = str.format("{0}.mp3", self.lastICAO)
+        
+        tts = gtts.gTTS(self.voiceTextMetar, lang='en').save(filename)
+
+    def GetMetar(self, ICAO_Code, saveasmp3=False, outputfolder=''):
         self.lastICAO = str.upper(ICAO_Code)
         
         metarURL = str.format("https://tgftp.nws.noaa.gov/data/observations/metar/stations/{0}.TXT", self.lastICAO)
         self.rawMetar = requests.get(metarURL).text
         self.decodedMetar = Metar(ICAO_Code, self.rawMetar)
         self.voiceTextMetar = self.__getMetarVoiceText()
+        if saveasmp3:
+            self.__saveMetarToAudio(outputfolder)
 
-    def SaveMetarToAudio(self, OutputFolder):
-        tts = gtts.gTTS(self.voiceTextMetar, lang='en')
-        tts.save(str.format("{0}\\{1}.mp3", OutputFolder, self.lastICAO))
+    
