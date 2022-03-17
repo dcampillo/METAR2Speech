@@ -83,7 +83,6 @@ class Converter:
         self.rawMetar = requests.get(metarURL).text
         self.decodedMetar = Metar(ICAO_Code, self.rawMetar)
         self.voiceTextMetar = self.__getMetarVoiceText()
-        
 
     def SaveMetarToAudio(self, OutputFolder):
         tts = gtts.gTTS(self.voiceTextMetar, lang='en')
