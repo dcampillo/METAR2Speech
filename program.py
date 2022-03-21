@@ -3,10 +3,15 @@ import metar2speech
 # Create an instace of the Converter
 m2s = metar2speech.Converter()
 
-icaos = {'lsmp', 'lszh', 'lsgg', 'lszb', 'lsza'}
+
+
+icaos = {'KLAX','lsmp', 'lszh', 'lsgg', 'lszb', 'lsza'}
+
+icaos = {'lsgg'}
+
 
 for icao in icaos:
-    m2s.GetMetar(icao, saveasmp3=False, outputfolder='c:\\tmp\\')
+    m2s.GetMetar(icao, saveasmp3=True, outputfolder='')
     print(m2s.voiceTextMetar)
 
 # Retrieve METAR
