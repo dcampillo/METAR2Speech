@@ -24,12 +24,52 @@ class Converter:
         gtts.tokenizer.symbols.SUB_PAIRS.append(('-.', 'Minus'))
 
 
+    def __spellWord(self, Word):
+        output = ''
+        for letter in str(Word).lower():
+            output += self.__getIcaoAlphabet(letter) + " "
+
+        return output
+
     def __spellNumber(self, Number):
         output = ''
         for letter in str(Number):
             output += letter + "."
 
         return output
+
+
+    def __getIcaoAlphabet(self, Letter):
+        icao = {
+            'a' : 'alpha',
+            'b' : 'bravo',
+            'c' : 'charly',
+            'd' : 'delta',
+            'e' : 'echo',
+            'f' : 'foxtrot',
+            'g' : 'golf',
+            'h' : 'hotel',
+            'i' : 'india',
+            'j' : 'juliet',
+            'k' : 'kilo',
+            'l' : 'lima',
+            'm' : 'mike',
+            'n' : 'november',
+            'o' : 'oscar',
+            'p' : 'papa',
+            'q' : 'quebec',
+            'r' : 'romeo',
+            's' : 'sierra',
+            't' : 'tango',
+            'u' : 'uniform',
+            'v' : 'victor',
+            'w' : 'whisky',
+            'x' : 'x-ray',
+            'y' : 'yankee',
+            'z' : 'zulu'
+        }
+
+        return icao[Letter]
 
     def __getCloud(self, CloudInfos):
         cloudText = ''
@@ -75,7 +115,7 @@ class Converter:
         return str.format("QNH {0}", self.__spellNumber(QNH))
 
     def __getMetarVoiceText(self):
-        return str.format("Weather report at {0}, {1}{2}{3}{4}{5}", self.__getTime(self.decodedMetar.date_time), self.__getWind(self.decodedMetar.wind), self.__getVisibility(self.decodedMetar.visibility), self.__getCloud(self.decodedMetar.cloud), self.__getTemperature(self.decodedMetar.temperatures), self.__getQNH(self.decodedMetar.qnh))
+        return str.format("Weather report for {0} at {1}, {2}{3}{4}{5}{6}", self.__spellWord(self.lastICAO), self.__getTime(self.decodedMetar.date_time), self.__getWind(self.decodedMetar.wind), self.__getVisibility(self.decodedMetar.visibility), self.__getCloud(self.decodedMetar.cloud), self.__getTemperature(self.decodedMetar.temperatures), self.__getQNH(self.decodedMetar.qnh))
 
     def __saveMetarToAudio(self, OutputFolder):
         if OutputFolder != '':
@@ -87,7 +127,6 @@ class Converter:
 
     def GetMetar(self, ICAO_Code, saveasmp3=False, outputfolder=''):
         self.lastICAO = str.upper(ICAO_Code)
-        
         metarURL = str.format("https://tgftp.nws.noaa.gov/data/observations/metar/stations/{0}.TXT", self.lastICAO)
         self.rawMetar = requests.get(metarURL).text
         self.decodedMetar = Metar(ICAO_Code, self.rawMetar)
