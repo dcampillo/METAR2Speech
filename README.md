@@ -7,4 +7,4 @@ METAR2Speech is an easy way to translate METAR into audio file while training or
 - Support all METAR provided by http://tgftp.nws.noaa.gov
 - Supports the spelling of 3=Tree, 5=Fife and 9=Niner
 
-# Disclaimer: METAR2Speech is a not meant to be used for real flight. The creator of METAR2Speech can't be held accountable for any misusage of the software.
+# Disclaimer: METAR2Speech is not meant to be used for real flight. The creator of METAR2Speech can't be held accountable for any misusage of the software.
