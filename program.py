@@ -7,7 +7,7 @@ m2s = metar2speech.Converter()
 
 icaos = {'KLAX','lsmp', 'lszh', 'lsgg', 'lszb', 'lsza'}
 
-icaos = {'lsgg'}
+icaos = {'LSGS'}
 
 
 for icao in icaos:

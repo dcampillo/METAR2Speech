@@ -4,6 +4,7 @@ import gtts
 from gtts.tokenizer import pre_processors
 import gtts.tokenizer.symbols
 
+
 class Converter:
 
     def __init__(self):
@@ -24,7 +25,7 @@ class Converter:
         gtts.tokenizer.symbols.SUB_PAIRS.append(('-.', 'Minus'))
 
 
-    def __spellWord(self, Word):
+    def __spellWord(self, Word : str):
         output = ''
         for letter in str(Word).lower():
             output += self.__getIcaoAlphabet(letter) + " "
@@ -39,7 +40,7 @@ class Converter:
         return output
 
 
-    def __getIcaoAlphabet(self, Letter):
+    def __getIcaoAlphabet(self, Letter: str):
         icao = {
             'a' : 'alpha',
             'b' : 'bravo',
@@ -72,12 +73,16 @@ class Converter:
         return icao[Letter]
 
     def __getCloud(self, CloudInfos):
+        clouds = []
+        for cloud in CloudInfos:
+            clouds.append(cloud['meaning'] + " " + str(cloud['altitude']) + "ft")
+        return "Clouds {clouds_details}, ".format(clouds_details=", ".join(clouds))
         cloudText = ''
         if CloudInfos:
             cloudText = 'Clouds '
             for cloud in CloudInfos:
                 cloudText += cloud['meaning'] + " " + str(cloud['altitude']) + "ft" + " "
-            cloudText += ", "
+                cloudText += ", "
         return cloudText
 
     def __getTemperature(self, TemperaturesInfos):
@@ -123,15 +128,24 @@ class Converter:
         else:
             filename = str.format("{0}.mp3", self.lastICAO)
         
-        tts = gtts.gTTS(self.voiceTextMetar, lang='en').save(filename)
+        tts = gtts.gTTS(self.voiceTextMetar, tld="us", lang='en').save(filename)
 
     def GetMetar(self, ICAO_Code, saveasmp3=False, outputfolder=''):
         self.lastICAO = str.upper(ICAO_Code)
-        metarURL = str.format("https://tgftp.nws.noaa.gov/data/observations/metar/stations/{0}.TXT", self.lastICAO)
-        self.rawMetar = requests.get(metarURL).text
-        self.decodedMetar = Metar(ICAO_Code, self.rawMetar)
+        #metarURL = str.format("https://tgftp.nws.noaa.gov/data/observations/metar/stations/{0}.TXT", self.lastICAO)
+        #self.rawMetar = requests.get(metarURL).text
+        #self.decodedMetar = Metar(ICAO_Code, self.rawMetar)
+        self.decodedMetar = Metar(self.lastICAO)
         self.voiceTextMetar = self.__getMetarVoiceText()
         if saveasmp3:
             self.__saveMetarToAudio(outputfolder)
 
-    
+
+if __name__ == "__main__":
+    import sys
+    m2s = Converter()
+    m2s.GetMetar(sys.argv[1], saveasmp3=True)
+    print(m2s.decodedMetar.metar)
+    print(m2s.decodedMetar.auto)
+
+    print(m2s.voiceTextMetar)
